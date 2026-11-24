@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 19 - Ordenar Arrays</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-txt-w: rgb(255, 255, 255);
+            --color-primary: rgb(75, 151, 214);
+            --color-h-bg: rgb(0, 81, 119);
+            --color-accept: rgb(0, 85, 119);
+            --color-deny: rgb(151, 0, 0);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        header {
+            background-color: var(--color-h-bg);
+            color: var(--color-txt-w);
+            text-align: center;
+            font-size: 2rem;
+            padding: 2rem;
+            border-bottom: 10px solid var(--color-primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .25);
+            text-shadow: 7px 7px 0 rgba(0, 0, 0, .25);
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .productos {
+            grid-column: 1 / 9;
+        }
+
+        .productos h2 {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.75rem;
+        }
+
+        .productos-flex {
+            display: flex;
+            justify-content: space-evenly;
+            padding: 2rem;
+        }
+
+        .productos-flex article {
+            border: 5px solid var(--color-h-bg);
+            border-radius: 15px;
+            width: 30%;
+            box-shadow: 10px 10px 0 rgba(0, 0, 0, .20);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .productos-flex .price {
+            font-size: 2rem;
+            margin-left: 2rem;
+        }
+
+        .productos-flex article h3 {
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.25rem;
+            width: 100%;
+        }
+
+        .productos-flex article span {
+            font-weight: bold;
+        }
+
+        .productos-flex article button {
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            margin-top: 1rem;
+            padding: 1rem;
+            bottom: 0;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 0 0 8px 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--color-txt-w);
+            background-color: var(--color-h-bg);
+            transition: all ease .25s;
+        }
+
+        .productos-flex article button:hover {
+            background-color: var(--color-primary);
+        }
+
+        .carro {
+            font-size: 1rem;
+            grid-column: 9 / 13;
+            background-color: white;
+            border-left: 5px solid var(--color-h-bg);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, .25);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .carro h2 {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            font-size: 1.75rem;
+            flex-shrink: 0;
+        }
+
+        .tabla-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: 100%;
+            padding: 0 0.5rem;
+        }
+
+
+        .botones-pedido {
+            padding: 1rem;
+            background-color: white;
+            border-top: 2px solid rgba(0, 0, 0, .10);
+        }
+
+        .flex-botones {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .botones-pedido button {
+            padding: 1rem;
+            margin-left: 1rem;
+        }
+
+        #empty-cart {
+            border: none;
+            font-size: 1rem;
+            color: var(--color-txt-w);
+            transition: all ease .25s;
+            cursor: pointer;
+            border-radius: 10px;
+            background-color: var(--color-deny);
+        }
+
+        #empty-cart:hover {
+            background-color: red;
+        }
+
+        #pay-cart {
+            border: none;
+            font-size: 1rem;
+            color: var(--color-txt-w);
+            transition: all ease .25s;
+            cursor: pointer;
+            border-radius: 10px;
+            background-color: var(--color-accept);
+        }
+
+        #pay-cart:hover {
+            background-color: rgb(0, 214, 0);
+        }
+
+        .precio-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .carro table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabla-scroll thead {
+            border-bottom: 2px dotted rgba(0, 0, 0, .25);
+        }
+
+        .tabla-scroll th {
+            padding: 1rem 0;
+        }
+
+        .tabla-scroll td {
+            text-align: center;
+            padding: 1rem 0;
+            border-bottom: 2px dotted rgba(0, 0, 0, .25);
+            background-size: 3px 1px;
+        }
+
+        .tabla-scroll button {
+            font-size: 1rem;
+            background-color: white;
+            border-radius: 10px;
+            border: none;
+            box-shadow: inset 0 0 0 rgba(255, 0, 0, 1);
+            width: 50px;
+            height: 50px;
+            transition: all .25s ease;
+        }
+
+        .tabla-scroll button:hover {
+            box-shadow: inset 0 0 50px rgba(255, 0, 0, 1);
+            cursor: pointer;
+        }
+
+        .input-cant {
+            width: 80px;
+            font-size: 1rem;
+            padding: 1rem;
+            border: none;
+            background-color: rgba(0, 0, 0, .05);
+            border-bottom: 2px solid var(--color-h-bg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>TIENDA DE TICKETS</h1>
+    </header>
+
+    <main>
+        <section class="productos">
+            <h2>Productos</h2>
+            <div class="productos-flex">
+                <article>
+                    <h3>Entrada Niños</h3>
+                    <p>Descripción breve del producto 1.</p>
+                    <p class="price"><span>10€</span></p>
+                    <button type="button" id="product-1">Añadir al carrito</button>
+                </article>
+                <article>
+                    <h3>Entrada Jubilados</h3>
+                    <p>Descripción breve del producto 2.</p>
+                    <p class="price"><span>20€</span></p>
+                    <button type="button" id="product-2">Añadir al carrito</button>
+                </article>
+                <article>
+                    <h3>Entrada Adultos</h3>
+                    <p>Descripción breve del producto 3.</p>
+                    <p class="price"><span>30€</span></p>
+                    <button type="button" id="product-3">Añadir al carrito</button>
+                </article>
+            </div>
+        </section>
+        <section class="carro">
+            <h2>Carro</h2>
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="botones-pedido">
+                <p>Total a pagar: <span class="precio-total"></span></p>
+                <div class="flex-botones">
+                    <button type="button" id="empty-cart">Vaciar Carrito</button>
+                    <button type="button" id="pay-cart">Proceder al Pago</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        //Datos base
+        const datos = []
+        const id = 'Ismael_Tienda'
+        const url_guardar = `https://datos.cursoweb.tech/guardar.php?dest=${id}`
+        const url_leer = `https://datos.cursoweb.tech/leer.php?dest=${id}`
+        const usuario = "labora";
+        const password = "Cl4v3$";
+        // Codificar credenciales en Base64
+        const credenciales = btoa(`${usuario}:${password}`);
+
+        let nombres = JSON.parse(localStorage.getItem('nombres')) || [];
+        let precios = JSON.parse(localStorage.getItem('precios')) || [];
+        let cantidades = JSON.parse(localStorage.getItem('cantidades')) || [];
+
+        let btn1 = document.getElementById('product-1');
+        let btn2 = document.getElementById('product-2');
+        let btn3 = document.getElementById('product-3');
+        let tabla = document.querySelector('tbody');
+        let textoTotal = document.querySelector('.precio-total');
+        let btnVaciar = document.getElementById('empty-cart');
+        let btnComprar = document.getElementById('pay-cart');
+
+        async function enviaDatosServidor(datos) {
+            const carritoData = {
+                nombres: nombres,
+                precios: precios,
+                cantidades: cantidades
+            };
+
+            try {
+                const res = await fetch(url_guardar, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Basic ${credenciales}`
+                    },
+                    body: JSON.stringify(carritoData)
+                });
+                if (!res.ok) {
+                    throw new Error('Error al guardar en el servidor');
+                }
+                await leerDatosServidor();
+                const data = await res.json();
+                console.log("Guardado en servidor:", carritoData);
+            } catch (err) {
+                console.error("Error:", err);
+            }
+        }
+
+        async function leerDatosServidor() {
+            try {
+                const res = await fetch(url_leer);
+                if (!res.ok) {
+                    throw new Error('No se ha podido conectar al servidor');
+                }
+                const data = await res.json();
+
+                if (data && data.nombres) {
+                    nombres = data.nombres;
+                    precios = data.precios;
+                    cantidades = data.cantidades;
+                }
+
+                actualizarTabla();
+            } catch (error) {
+                console.log("No se pudo cargar del servidor, iniciando vacío:", error);
+                actualizarTabla();
+            }
+        }
+
+        function actualizarTabla() {
+            tabla.innerHTML = "";
+            let sumaTotal = 0;
+
+            for (let i = 0; i < nombres.length; i++) {
+                let subtotal = precios[i] * cantidades[i];
+                sumaTotal = sumaTotal + subtotal;
+
+                let fila = document.createElement('tr');
+                fila.innerHTML = "<td>" + nombres[i] + "</td>" +
+                    "<td>" + precios[i] + "€</td>" +
+                    "<td><input type='number' value='" + cantidades[i] + "' min='1' class='input-cant' data-i='" + i + "'></td>" +
+                    "<td>" + subtotal + "€</td>" +
+                    "<td><button class='btn-borrar' data-i='" + i + "'>X</button></td>";
+
+                tabla.appendChild(fila);
+            }
+
+            textoTotal.textContent = sumaTotal + "€";
+
+            localStorage.setItem('nombres', JSON.stringify(nombres));
+            localStorage.setItem('precios', JSON.stringify(precios));
+            localStorage.setItem('cantidades', JSON.stringify(cantidades));
+
+            activarBotones();
+        }
+
+        btn1.addEventListener('click', function () {
+            addProd("Entrada Niño", 15.00);
+        });
+
+        btn2.addEventListener('click', function () {
+            addProd("Entrada Jubilado", 20.00);
+        });
+
+        btn3.addEventListener('click', function () {
+            addProd("Entrada Adulto", 30.00);
+        });
+
+        function addProd(nombreProd, precioProd) {
+            let yaExiste = false;
+
+            for (let i = 0; i < nombres.length; i++) {
+                if (nombres[i] === nombreProd) {
+                    cantidades[i] = cantidades[i] + 1;
+                    yaExiste = true;
+                }
+            }
+
+            if (yaExiste === false) {
+                nombres.push(nombreProd);
+                precios.push(precioProd);
+                cantidades.push(1);
+            }
+            actualizarTabla();
+        }
+
+        function activarBotones() {
+            let inputs = document.querySelectorAll('.input-cant');
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener('change', function (e) {
+                    let index = e.target.getAttribute('data-i');
+                    cantidades[index] = parseInt(e.target.value);
+                    actualizarTabla();
+                });
+            }
+
+            let borraBtns = document.querySelectorAll('.btn-borrar');
+            for (let i = 0; i < borraBtns.length; i++) {
+                borraBtns[i].addEventListener('click', function (e) {
+                    let index = e.target.getAttribute('data-i');
+                    nombres.splice(index, 1);
+                    precios.splice(index, 1);
+                    cantidades.splice(index, 1);
+                    actualizarTabla();
+                });
+            }
+        }
+
+        btnVaciar.addEventListener('click', function () {
+            nombres = [];
+            precios = [];
+            cantidades = [];
+            actualizarTabla();
+        });
+
+        btnComprar.addEventListener('click', function () {
+            if (nombres.length === 0) {
+                alert("El carrito está vacío");
+            } else {
+                enviaDatosServidor();
+                alert("¡Compra realizada con éxito!");
+
+                nombres = [];
+                precios = [];
+                cantidades = [];
+                actualizarTabla();
+
+            }
+        });
+
+        actualizarTabla();
+        leerDatosServidor();
+
+    </script>
+</body>
+
+</html>

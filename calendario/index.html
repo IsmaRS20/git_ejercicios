@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 08 - Calendario 26</title>
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding: 120px;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            background-color: rgba(60, 60, 60);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        main {
+            padding-bottom: 200px;
+            background-color: rgba(0, 0, 0, .25);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 4rem;
+            padding: 2rem;
+            background-color: darkcyan;
+            color: white;
+        }
+
+        .navegacion {
+            background-color: rgba(0, 0, 0, .5);
+            backdrop-filter: blur(2px);
+            box-shadow: 0px 5px 4px rgba(0, 0, 0, .25);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        li {
+            margin: 9px;
+            width: 240px;
+            background-color: rgba(0, 0, 0, .5);
+            text-align: center;
+            display: block;
+            border-radius: 50px;
+            box-shadow: 0px 5px 4px rgba(0, 0, 0, .5);
+            transition: transform 0.2s ease;
+            user-select: none;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            padding: 1rem;
+            display: block;
+            transition: all .25s ease;
+            border-radius: 50px;
+            user-select: none;
+        }
+
+        a:hover {
+            color: rgb(31, 49, 42);
+            background-color: rgb(119, 255, 198);
+            transform: scale(1.05);
+        }
+
+        img {
+            width: 160px;
+            height: 288px;
+            display: block;
+        }
+
+        table,
+        tr,
+        th,
+        td {
+            border-collapse: collapse;
+            text-align: center;
+            transition: all 0.25s ease;
+            user-select: none;
+            border: 1px solid rgba(0, 0, 0, .5);
+        }
+
+        table {
+            border: 0px solid rgba(0, 0, 0, 0);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, .75);
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        table {
+            margin-top: 3rem;
+            width: 580px;
+            height: 360px;
+        }
+
+        table:hover {
+            border: 4px solid rgb(119, 255, 198);
+            background-color: rgba(119, 255, 198, 0.25);
+            transform: scale(1.05);
+        }
+
+        td:hover {
+            background-color: rgb(216, 216, 216);
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, .5);
+        }
+
+        th:hover {
+            background-color: darkcyan;
+            color: white;
+        }
+
+        td.dias {
+            font-weight: bold;
+        }
+
+        td.domingo {
+            color: gold;
+            font-weight: bold;
+        }
+
+        td.domingo:hover {
+            background-color: gold;
+            color: black;
+        }
+
+        th,
+        td {
+            width: 60px;
+            height: 36px;
+        }
+
+        td {
+            background-color: rgba(0, 0, 0, .5);
+        }
+
+        th {
+            width: 580px;
+            height: 72px;
+        }
+
+        .cabecera {
+            font-size: 2rem;
+        }
+
+        section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 2rem;
+        }
+
+        .empty {
+            background-color: rgba(0, 0, 0, .25);
+        }
+
+        td.empty:hover {
+            background-color: rgba(0, 0, 0, .5);
+            cursor: auto;
+        }
+
+        .modal {
+            display: none;
+            width: 400px;
+            height: 270px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1b1b1b;
+            z-index: 1000;
+            border: 4px solid rgb(119, 255, 198);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.activo {
+            display: flex;
+        }
+
+        .modal-contenido {
+            padding: 2rem;
+            line-height: 2.5rem;
+            min-width: 300px;
+            position: relative;
+        }
+
+        #cerrarModal {
+            position: absolute;
+            top: 8px;
+            right: 14px;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all .25s ease;
+        }
+
+        #cerrarModal:hover {
+            color: lightcoral;
+        }
+
+        td.tiene-evento {
+            background-color: rgb(0, 143, 31);
+            font-weight: bold;
+            position: relative;
+        }
+
+        td {
+            position: relative;
+        }
+
+        .qtip-texto {
+            display: hidden;
+            background-color: #1b1b1b;
+            color: white;
+            text-align: center;
+            padding: 4px 8px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 1rem;
+            border: 2px solid rgb(119, 255, 198);
+            opacity: 0;
+            transition: all 0.25s ease;
+        }
+
+        td.tiene-evento:hover .qtip-texto {
+            display: initial;
+            opacity: 1;
+        }
+
+        .cerrar-evento {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-left: 1rem;
+            transition: all 0.25s ease;
+        }
+
+        .cerrar-evento:hover {
+            color: lightcoral;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor">
+        <header>
+            <H1>Calendario 2026</H1>
+        </header>
+        <main>
+            <nav class="navegacion">
+                <ul>
+                    <li><a href="#grupo-1">Enero - Febrero</a></li>
+                    <li><a href="#grupo-2">Marzo - Abril</a></li>
+                    <li><a href="#grupo-3">Mayo - Junio</a></li>
+                    <li><a href="#grupo-4">Julio - Agosto</a></li>
+                    <li><a href="#grupo-5">Septiembre - Octubre</a></li>
+                    <li><a href="#grupo-6">Noviembre - Diciembre</a></li>
+                </ul>
+            </nav>
+            <div id="event-modal" class="modal">
+                <div class="modal-contenido">
+                    <span id="cerrarModal">&times;</span>
+                    <h2>Información del Evento</h2>
+                    <div class="eventos" id="modalTexto">
+                        <div class="fila">
+                            <label for="in_event_name">Nombre de evento</label>
+                            <input type="text" name="" id="in_event_name">
+                        </div>
+                        <div class="fila">
+                            <label for="in_date">Fecha de evento</label>
+                            <input type="date" name="" id="in_fecha">
+                        </div>
+                        <div class="fila">
+                            <button type="button" id="btn_event">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section id="grupo-1">
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">ENERO</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8" class="imagen"><img src="img/enero.jpg" alt="Enero"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td class="dias domingo">4</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                            <td class="dias domingo">11</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                            <td class="dias domingo">18</td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                            <td class="dias domingo">25</td>
+                        </tr>
+                        <tr>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td>31</td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">FEBRERO</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/febrero.avif" alt="Febrero"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="dias domingo">1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td class="dias domingo">8</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>10</td>
+                            <td>11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td class="dias domingo">15</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td class="dias domingo">22</td>
+                        </tr>
+                        <tr>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+            </section>
+            <section id="grupo-2">
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">MARZO</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/marzo.jpg" alt="Marzo"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="dias domingo">1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td class="dias domingo">8</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>10</td>
+                            <td>11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td class="dias domingo">15</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td class="dias domingo">22</td>
+                        </tr>
+                        <tr>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td class="dias domingo">29</td>
+                        </tr>
+                        <tr>
+                            <td>30</td>
+                            <td>31</td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">ABRIL</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/abril.jpg" alt="Abril"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td class="dias domingo">5</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                            <td>11</td>
+                            <td class="dias domingo">12</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td class="dias domingo">19</td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                            <td class="dias domingo">26</td>
+                        </tr>
+                        <tr>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+            </section>
+            <section id="grupo-3">
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">MAYO</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/mayo.jpg" alt="Mayo"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td class="dias domingo">3</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td class="dias domingo">10</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td class="dias domingo">17</td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td class="dias domingo">24</td>
+                        </tr>
+                        <tr>
+                            <td>25</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td class="dias domingo">31</td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">JUNIO</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/junio.jpg" alt="Junio"></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td class="dias domingo">7</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                            <td>11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td class="dias domingo">14</td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td>19</td>
+                            <td>20</td>
+                            <td class="dias domingo">21</td>
+                        </tr>
+                        <tr>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td class="dias domingo">28</td>
+                        </tr>
+                        <tr>
+                            <td>29</td>
+                            <td>30</td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+            </section>
+            <section id="grupo-4">
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">JULIO</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/julio.jpg" alt="Julio"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td class="dias domingo">5</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                            <td>11</td>
+                            <td class="dias domingo">12</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td class="dias domingo">19</td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                            <td class="dias domingo">26</td>
+                        </tr>
+                        <tr>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td>31</td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">AGOSTO</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/agosto.jpg" alt="Agosto"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td>1</td>
+                            <td class="dias domingo">2</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td class="dias domingo">9</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                            <td class="dias domingo">16</td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td>18</td>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td>22</td>
+                            <td class="dias domingo">23</td>
+                        </tr>
+                        <tr>
+                            <td>24</td>
+                            <td>25</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td class="dias domingo">30</td>
+                        </tr>
+                        <tr>
+                            <td>31</td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+            </section>
+            <section id="grupo-5">
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">SEPTIEMBRE</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/septiembre.jpg" alt="Septiembre"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td class="dias domingo">6</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                            <td>11</td>
+                            <td>12</td>
+                            <td class="dias domingo">13</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td>19</td>
+                            <td class="dias domingo">20</td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                            <td>26</td>
+                            <td class="dias domingo">27</td>
+                        </tr>
+                        <tr>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">OCTUBRE</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/octubre.jpg" alt="Octubre"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td class="dias domingo">4</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                            <td class="dias domingo">11</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                            <td class="dias domingo">18</td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                            <td class="dias domingo">25</td>
+                        </tr>
+                        <tr>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td>31</td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+            </section>
+            <section id="grupo-6">
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">NOVIEMBRE</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/noviembre.jpg" alt="Noviembre"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="dias domingo">1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
+                            <td>7</td>
+                            <td class="dias domingo">8</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>10</td>
+                            <td>11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td class="dias domingo">15</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td>19</td>
+                            <td>20</td>
+                            <td>21</td>
+                            <td class="dias domingo">22</td>
+                        </tr>
+                        <tr>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td class="dias domingo">29</td>
+                        </tr>
+                        <tr>
+                            <td>30</td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+                <article>
+                    <table>
+                        <tr>
+                            <th colspan="8">DICIEMBRE</th>
+                        </tr>
+                        <tr>
+                            <td class="dias">L</td>
+                            <td class="dias">M</td>
+                            <td class="dias">X</td>
+                            <td class="dias">J</td>
+                            <td class="dias">V</td>
+                            <td class="dias">S</td>
+                            <td class="dias domingo">D</td>
+                            <td rowspan="8"><img src="img/diciembre.jpg" alt="Diciembre"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td class="dias domingo">6</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                            <td>11</td>
+                            <td>12</td>
+                            <td class="dias domingo">13</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>15</td>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td>19</td>
+                            <td class="dias domingo">20</td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                            <td>26</td>
+                            <td class="dias domingo">27</td>
+                        </tr>
+                        <tr>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                            <td>31</td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                        <tr>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                            <td class="empty"></td>
+                        </tr>
+                    </table>
+                </article>
+            </section>
+        </main>
+    </div>
+    <script>
+        const id = 'Ismael_Calendario';
+        const url_guardar = `https://datos.cursoweb.tech/guardar.php?dest=${id}`;
+        const url_leer = `https://datos.cursoweb.tech/leer.php?dest=${id}`;
+        const usuario = "labora";
+        const password = "Cl4v3$";
+        const credenciales = btoa(`${usuario}:${password}`);
+
+        let eventos = {};
+
+        let celdaSeleccionada = null;
+
+        const modal = document.getElementById('event-modal');
+        const inputFecha = document.getElementById('in_fecha');
+        const inputName = document.getElementById('in_event_name');
+        const celdas = document.querySelectorAll('table td');
+
+        const meses = {
+            'ENERO': '01',
+            'FEBRERO': '02',
+            'MARZO': '03',
+            'ABRIL': '04',
+            'MAYO': '05',
+            'JUNIO': '06',
+            'JULIO': '07',
+            'AGOSTO': '08',
+            'SEPTIEMBRE': '09',
+            'OCTUBRE': '10',
+            'NOVIEMBRE': '11',
+            'DICIEMBRE': '12'
+        };
+
+        async function enviaDatos() {
+            console.log("Objeto de eventos:", eventos);
+
+            try {
+                const res = await fetch(url_guardar, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Basic ${credenciales}`
+                    },
+                    body: JSON.stringify(eventos)
+                });
+                if (!res.ok) {
+                    throw new Error('Error en la conexión');
+                }
+            } catch (err) {
+                console.error("Error:", err);
+            }
+        }
+
+        async function leerDatos() {
+            try {
+                const res = await fetch(url_leer, { cache: 'no-store' });
+                if (!res.ok) {
+                    throw new Error('No se ha podido conectar');
+                }
+                const texto = await res.text();
+                const respuesta = texto.trim() === '' ? [] : JSON.parse(texto);
+
+                if (respuesta.length > 0) {
+                    eventos = respuesta[respuesta.length - 1];
+                    delete eventos.server_timestamp;
+                }
+
+                pintarEventos();
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        function calcularFecha(celda, texto) {
+            const tabla = celda.closest('table');
+            const nombreMes = tabla.querySelector('th').textContent.trim().toUpperCase();
+
+            let dia = texto;
+            if (dia.length == 1) {
+                dia = '0' + dia;
+            }
+
+            return '2026-' + meses[nombreMes] + '-' + dia;
+        }
+
+        function pintarEventos() {
+            for (let i = 0; i < celdas.length; i++) {
+                const fecha = celdas[i].fecha;
+                if (eventos[fecha]) {
+                    mostrarEvento(celdas[i], eventos[fecha]);
+                }
+            }
+        }
+
+        function mostrarEvento(celda, nombre) {
+            celda.classList.add('tiene-evento');
+            celda.setAttribute('data-evento-nombre', nombre);
+
+            let qtip = celda.querySelector('.qtip-texto');
+            if (qtip == null) {
+                qtip = document.createElement('span');
+                qtip.className = 'qtip-texto';
+
+                const spanNombre = document.createElement('span');
+                spanNombre.className = 'qtip-nombre';
+
+                const spanCerrar = document.createElement('span');
+                spanCerrar.className = 'cerrar-evento';
+                spanCerrar.innerHTML = '&times;';
+                spanCerrar.onclick = borrarEvento;
+
+                qtip.appendChild(spanNombre);
+                qtip.appendChild(spanCerrar);
+                celda.appendChild(qtip);
+            }
+
+            qtip.querySelector('.qtip-nombre').textContent = nombre;
+        }
+
+        function borrarEvento() {
+            const qtip = this.parentNode;
+            const celda = qtip.parentNode;
+
+            delete eventos[celda.fecha];
+
+            celda.classList.remove('tiene-evento');
+            celda.removeAttribute('data-evento-nombre');
+            celda.removeChild(qtip);
+
+            enviaDatos();
+        }
+
+        function abrirModal(evento) {
+            if (evento.target.className == 'cerrar-evento') {
+                return;
+            }
+
+            celdaSeleccionada = this;
+            inputFecha.value = this.fecha;
+
+            if (eventos[this.fecha]) {
+                inputName.value = eventos[this.fecha];
+            } else {
+                inputName.value = '';
+            }
+
+            modal.classList.add('activo');
+        }
+
+        function cerrarVentana() {
+            modal.classList.remove('activo');
+        }
+
+        function clicEnFondo(evento) {
+            if (evento.target == modal) {
+                cerrarVentana();
+            }
+        }
+
+        function guardarEvento() {
+            const nombre = inputName.value.trim();
+
+            if (nombre == '') {
+                alert('Por favor, escribe el nombre del evento.');
+                return;
+            }
+
+            eventos[celdaSeleccionada.fecha] = nombre;
+            mostrarEvento(celdaSeleccionada, nombre);
+            enviaDatos();
+            cerrarVentana();
+        }
+
+        document.getElementById('cerrarModal').onclick = cerrarVentana;
+        document.getElementById('btn_event').onclick = guardarEvento;
+        modal.onclick = clicEnFondo;
+
+        for (let i = 0; i < celdas.length; i++) {
+            const celda = celdas[i];
+            const texto = celda.textContent.trim();
+
+            const esNumero = texto != '' && !isNaN(texto);
+            const esVacia = celda.classList.contains('empty');
+            const esImagen = celda.classList.contains('imagen');
+
+            if (esNumero && !esVacia && !esImagen) {
+                celda.fecha = calcularFecha(celda, texto);
+                celda.style.cursor = 'pointer';
+                celda.onclick = abrirModal;
+            }
+        }
+
+        leerDatos();
+    </script>
+</body>
+
+</html>
